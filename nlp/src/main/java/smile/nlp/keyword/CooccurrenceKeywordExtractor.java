@@ -48,6 +48,32 @@ import smile.sort.QuickSort;
  * @author Haifeng Li
  */
 public class CooccurrenceKeywordExtractor {
+    
+    private Tokenizer tokenizer;
+
+    private PorterStemmer stemmer;
+
+    private Tokenizer getTokenizer() {
+        if (tokenizer == null) {
+            tokenizer = new SimpleTokenizer();
+        }
+        return tokenizer;
+    }
+
+    protected void setTokenizer(SimpleTokenizer tokenizer) {
+        this.tokenizer = tokenizer;
+    }
+
+    private PorterStemmer getStemmer() {
+        if (stemmer == null) {
+            stemmer = new PorterStemmer();
+        }
+        return stemmer;
+    }
+
+    protected void setStemmer(PorterStemmer stemmer) {
+        this.stemmer = stemmer;
+    }
 
     /**
      * Returns the top 10 keywords.
@@ -66,16 +92,13 @@ public class CooccurrenceKeywordExtractor {
     public ArrayList<NGram> extract(String text, int maxNumKeywords) {
         ArrayList<String[]> sentences = new ArrayList<>();
         
-        SimpleTokenizer tokenizer = new SimpleTokenizer();
-        PorterStemmer stemmer = new PorterStemmer();
-        
         // Split text into sentences. Stem words by Porter algorithm.
         int ntotal = 0;
         for (String paragraph : SimpleParagraphSplitter.getInstance().split(text)) {
             for (String s : SimpleSentenceSplitter.getInstance().split(paragraph)) {
-                String[] sentence = tokenizer.split(s);
+                String[] sentence = getTokenizer().split(s);
                 for (int i = 0; i < sentence.length; i++) {
-                    sentence[i] = stemmer.stripPluralParticiple(sentence[i]).toLowerCase();
+                    sentence[i] = getStemmer().stripPluralParticiple(sentence[i]).toLowerCase();
                 }
                 sentences.add(sentence);
                 ntotal += sentence.length;
